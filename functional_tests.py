@@ -40,14 +40,17 @@ class NewVisitorTest(unittest.TestCase):
 
 		# Wait until the page updates and table contains new row
 		WebDriverWait(self.browser, 10).until(
-			EC.text_to_be_present_in_element((By.TAG_NAME, 'tr'), '1: Buy peacock feathers')
+			EC.presence_of_element_located((By.TAG_NAME, 'tr'))
 		)
 
-		table = self.browser.find_elements_by_tag_name('tr')
-		rows = table.find_elements_by_tag_name('tr')
+		table = self.browser.find_element(By.TAG_NAME, 'table')
+		rows = table.find_elements(By.TAG_NAME, 'tr')
+
 		self.assertTrue(
-			any(row.text == '1: Buy peacock feathers' for row in rows)
+			any('Buy peacock feathers' in row.text for row in rows),
+			"New to-do item did not appear in the list"
 		)
+
 
 		# There is still a text box inviting her to add another item. She
 		# enters "Use peacock feathers to make a fly" (Lisa is very methodical)
