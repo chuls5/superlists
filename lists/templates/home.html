@@ -11,9 +11,9 @@
         </form>
 
         <table id="id_list_table">
-            {% if new_item_text %}
-                <tr><td>1: {{ new_item_text }}</td></tr>
-            {% endif %}
+            {% for item in items %}
+                <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
+            {% endfor %}
         </table>
     </body>
 </html>
