@@ -1,4 +1,3 @@
-import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -7,8 +6,10 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
+from django.test import LiveServerTestCase
 
-class NewVisitorTest(unittest.TestCase):
+
+class NewVisitorTest(LiveServerTestCase):
 
 	def setUp(self):
 		self.browser = webdriver.Firefox(service=Service(GeckoDriverManager().install()))
@@ -24,7 +25,7 @@ class NewVisitorTest(unittest.TestCase):
 
 	def test_can_start_a_list_and_retrieve_it_later(self):
 		# Lisa visits the home page
-		self.browser.get('http://localhost:8000')
+		self.browser.get(self.live_server_url)
 
 		# She checks the title and header
 		self.assertIn('To-Do', self.browser.title)
@@ -38,11 +39,9 @@ class NewVisitorTest(unittest.TestCase):
 		# She types "Buy peacock feathers" into a text box
 		inputbox.send_keys('Buy peacock feathers')
 
-
 		# When she hits enter, the page updates, and now the page lists
 		# "1: Buy peacock feathers" as an item in a to-do list"
 		inputbox.send_keys(Keys.ENTER)
-
 
 		# Wait for the new entry to appear
 		WebDriverWait(self.browser, 10).until(
@@ -50,19 +49,16 @@ class NewVisitorTest(unittest.TestCase):
 		)
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
 
-
 		# There is still a text box inviting her to add another item. She
 		# enters "Use peacock feathers to make a fly" (Lisa is very methodical)
 		inputbox = self.browser.find_element(By.ID, 'id_new_item')
 		inputbox.send_keys('Use peacock feathers to make a fly')
 		inputbox.send_keys(Keys.ENTER)
 
-
 		# Wait for the second entry to appear
 		WebDriverWait(self.browser, 10).until(
-			EC.text_to_be_present_in_element((By.ID, 'id_list_table'), 'Use Peacock feathers to make a fly')
+			EC.text_to_be_present_in_element((By.ID, 'id_list_table'), 'Use peacock feathers to make a fly')
 		)
-
 
 		# The page updates again, and now shows both items on her list
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
@@ -75,7 +71,3 @@ class NewVisitorTest(unittest.TestCase):
 		# She visits that URL - her to-do list is still there.
 
 		# Satisfied, she goes back to sleep
-
-
-if __name__ == '__main__':
-	unittest.main(warnings='ignore')
